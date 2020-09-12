@@ -66,7 +66,7 @@ def tokenize(string, tokenizer, padding):
     vector = tokenizer.texts_to_sequences([string])
     return sequence.pad_sequences(vector, maxlen=padding)
 
-def create_tokenizer(input_ds, top_words, preprocess_fn):
+def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text'):
     '''
     creates keras.preprocessing.text.Tokenizer object based on
     input dataset, top number of words, and nlp preprocessing
@@ -74,9 +74,9 @@ def create_tokenizer(input_ds, top_words, preprocess_fn):
     
     args:
         input_ds: list of dicts, each dict has the following key:
-            'text': str, text that needs to be tokenized
+            key: str, text that needs to be tokenized, default 'text'
         top_words: int, top number of words to be tokenized
-        preprocess_fn: function, the text in the input_ds will be
+        preprocess_fn: function, default, None, the text in the input_ds will be
         passed into this function to train the tokenizer
         (in input_ds text will also not be passed into the preprocess_fn)
     
@@ -84,10 +84,11 @@ def create_tokenizer(input_ds, top_words, preprocess_fn):
     '''
     word_list = [] #list of texts
     for item in input_ds:
-        words = item['text']
+        words = item[key]
         word_list.append(words)
-        preprocessed_words = preprocess_fn(words)
-        word_list.append(preprocessed_words)
+        if preprocess_fn:
+            preprocessed_words = preprocess_fn(words)
+            word_list.append(preprocessed_words)
     
     tokenizer = text.Tokenizer(num_words=top_words)
     tokenizer.fit_on_texts(word_list)
