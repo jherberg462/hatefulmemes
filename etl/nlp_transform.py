@@ -49,7 +49,7 @@ def remove_stopwords(doc, language='en_core_web_sm'):
             no_stops = '{} {}'.format(no_stops, word)
     return no_stops
 
-def tokenize(string, tokenizer, padding, start_pad=None, end_pad=None):
+def tokenize(string, tokenizer, padding, start_pad=None, end_pad=None, pad_loc='pre'):
     '''
     calls .texts_to_sequences on a tokenizer using string as input
     
@@ -65,6 +65,7 @@ def tokenize(string, tokenizer, padding, start_pad=None, end_pad=None):
             this value
             start_pad and end_pad will allow you to add the same word at the 
             beginning and end of each sequence
+        pad_loc: str, default 'pre', must be 'pre' or 'post' location of zero padding
     
     returns: output of tokenizer.texts_to_sequences with string as input
     with a len of padding
@@ -74,9 +75,9 @@ def tokenize(string, tokenizer, padding, start_pad=None, end_pad=None):
         vector[0].insert(0, start_pad)
     if end_pad:
         vector[0].append(end_pad)
-    return sequence.pad_sequences(vector, maxlen=padding)
+    return sequence.pad_sequences(vector, maxlen=padding, padding=pad_loc)
 
-def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text'):
+def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text', oov_token=None):
     '''
     creates keras.preprocessing.text.Tokenizer object based on
     input dataset, top number of words, and nlp preprocessing
@@ -84,11 +85,12 @@ def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text'):
     
     args:
         input_ds: list of dicts, each dict has the following key:
-            key: str, text that needs to be tokenized, default 'text'
+            key: str, default 'text', text that needs to be tokenized, default 'text'
         top_words: int, top number of words to be tokenized
         preprocess_fn: function, default, None, the text in the input_ds will be
         passed into this function to train the tokenizer
         (in input_ds text will also not be passed into the preprocess_fn)
+        oov_token: str, default None, if not None, token to replace out of vocab words
     
     returns:keras.preprocessing.text.Tokenizer object
     '''
@@ -100,7 +102,7 @@ def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text'):
             preprocessed_words = preprocess_fn(words)
             word_list.append(preprocessed_words)
     
-    tokenizer = text.Tokenizer(num_words=top_words)
+    tokenizer = text.Tokenizer(num_words=top_words, oov_token=oov_token)
     tokenizer.fit_on_texts(word_list)
     return tokenizer
 
