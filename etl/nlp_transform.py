@@ -49,7 +49,7 @@ def remove_stopwords(doc, language='en_core_web_sm'):
             no_stops = '{} {}'.format(no_stops, word)
     return no_stops
 
-def tokenize(string, tokenizer, padding):
+def tokenize(string, tokenizer, padding, start_pad=None, end_pad=None):
     '''
     calls .texts_to_sequences on a tokenizer using string as input
     
@@ -59,11 +59,21 @@ def tokenize(string, tokenizer, padding):
         padding: int, length of output vector. If len of output vector is 
         less than padding, zeros will be added to beginning, if len is greater
         than len of output vector, it will be truncated 
+        start_pad: int, default None, if not None, will pad beginning of sequence
+            with this value 
+        end_pad: int, default None, if not None, will pad end of sequence with 
+            this value
+            start_pad and end_pad will allow you to add the same word at the 
+            beginning and end of each sequence
     
     returns: output of tokenizer.texts_to_sequences with string as input
     with a len of padding
     '''
     vector = tokenizer.texts_to_sequences([string])
+    if start_pad:
+        vector[0].insert(0, start_pad)
+    if end_pad:
+        vector[0].append(end_pad)
     return sequence.pad_sequences(vector, maxlen=padding)
 
 def create_tokenizer(input_ds, top_words, preprocess_fn=None, key='text'):
