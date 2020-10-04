@@ -114,7 +114,7 @@ def main(ds_path, client, bucket, num_splits=10, top_words=20000, padding=41, pr
     json_file_name = 'tokenizer.json'
     with open (json_file_name, 'w') as json_file:
         json.dump(tokenizer_json, json_file)
-    upload tokenizer json file
+    #upload tokenizer json file
     upload_TFrecord_gcs(json_file_name, client, bucket)
     startEnd_idxs = calc_idxs(ds, num_splits)
     file_num = 1
