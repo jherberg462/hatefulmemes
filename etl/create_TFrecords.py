@@ -104,12 +104,16 @@ def create_TFrecord(meme_list,
 
 
 
-def main(ds_path, client, bucket, num_splits=10, top_words=20000, padding=41, preprocess=transform_to_lemma):
+def main(ds_path, client, bucket, num_splits=10, top_words=20000, padding=41, preprocess=transform_to_lemma,
+        addl_ds_paths=None):
     '''
     creates all TFrecord files
     '''
     ds = load_jsonl_file(ds_path)
     tokenizer = create_tokenizer(ds, top_words, preprocess)###
+    for path in addl_ds_paths:
+        addl_ds = load_jsonl_file(path)
+        tokenizer = create_tokenizer(addl_ds, top_words, preprocess, tokenizer=tokenizer)
     tokenizer_json = tokenizer.to_json()
     json_file_name = 'tokenizer.json'
     with open (json_file_name, 'w') as json_file:
@@ -127,7 +131,8 @@ def main(ds_path, client, bucket, num_splits=10, top_words=20000, padding=41, pr
     
 
 
-main('train.jsonl', client, 'jh_hateful_memes', padding=58, top_words=30000)#padding - 41 for dev, 58 for train
+main('train.jsonl', client, 'jh_hateful_memes', padding=58, top_words=30000, 
+     addl_ds_paths=['test_seen.jsonl', 'test_unseen.jsonl'])#padding - 41 for dev, 58 for train
 
 
 

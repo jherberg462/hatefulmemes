@@ -27,8 +27,8 @@ client = storage.Client(project='hateful-memes', credentials=credentials)
 
 
 
-dev_ds = load_jsonl_file('dev.jsonl')
-train_ds = load_jsonl_file('train.jsonl')
+# dev_ds = load_jsonl_file('dev.jsonl')
+# train_ds = load_jsonl_file('train.jsonl')
 
 
 
@@ -121,11 +121,8 @@ def main(ds_path, client, bucket, num_splits=10, top_words=20000, padding=41, pr
     
 
 
-main('test_seen.jsonl', client, 'jh_hateful_memes_test', padding=58, num_splits=2)
+# main('test_seen.jsonl', client, 'jh_hateful_memes_test', padding=58, num_splits=2)
 main('test_unseen.jsonl', client, 'jh_hateful_memes_test_unseen', padding=58, num_splits=2)
-
-
-
 
 
 
